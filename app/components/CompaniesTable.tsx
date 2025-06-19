@@ -21,6 +21,7 @@ const CompaniesTable: React.FC<Props> = ({ companies = [] }) => {
           <TableRow>
             <TableHead>Company Name</TableHead>
             <TableHead>Domain</TableHead>
+            <TableHead>Industry</TableHead>
             <TableHead>City</TableHead>
             <TableHead>Country</TableHead>
             <TableHead>Employee Size</TableHead>
@@ -41,6 +42,9 @@ const CompaniesTable: React.FC<Props> = ({ companies = [] }) => {
                 >
                   {company.domain || "-"}
                 </a>
+              </TableCell>
+              <TableCell className="text-center">
+                {company.industry || "-"}
               </TableCell>
               <TableCell className="text-center">
                 {company.city || "-"}

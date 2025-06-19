@@ -1,13 +1,13 @@
 export interface Company {
+  id?: string;
   company_name: string;
   domain: string;
   city?: string;
   country: string;
   employee_size: EmployeeSize;
-  id?: string; // remove this later, just for my memory on what goes into table
-  raw_json?: string; // remove this later, just for my memory goes into table
-  industry?: string; // enrichment idea
-  linkedin_url?: string; // enrichment idea
+  industry?: string;
+  linkedin_url?: string;
+  raw_json?: string;
 }
 
 export type EmployeeSize =
@@ -34,16 +34,20 @@ export const employeeSizeOptions: EmployeeSize[] = [
 export type Companies = Company[];
 
 export const defaultCompany: Company = {
+  id: "1",
   company_name: "Apple",
   domain: "apple.com",
   country: "United States",
   city: "San Francisco",
-  employee_size: "1‑10",
-  id: "1",
+  employee_size: "10 000+",
+  industry: "Technology",
+  linkedin_url: "https://linkedin.com/company/apple",
   raw_json: JSON.stringify({
     company_name: "Apple",
     domain: "apple.com",
     country: "United States",
+    city: "San Francisco",
+    employee_size: "10 000+",
   }),
 };
 
