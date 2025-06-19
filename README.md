@@ -39,5 +39,6 @@ You can also view the app at [https://throxy.vercel.app](https://throxy.vercel.a
 5. I didn't implement pagination for simplicity, but in a real system I would.
 6. With more time, I would have added a better loading state for suspense, so each component has it's own loading and can be handled separately.
 7. In a real system, I would set up a table to track countries, so that the filter isn't hardcoded options, but instead is a dropdown of all countries currently in the database, or use a library to fetch all the countries in the world.
-8. The speed is quite slow because I'm doing it in one big chunk. Depending on the use case, we could batch the rows into small chunks so the user can see the data being uploaded in a real time rather than waiting for the whole thing to finish.
+8. The speed is quite slow because I'm doing it in one big chunk. Depending on the use case, we could batch the rows into small chunks so the user can see the data being uploaded in a real time rather than waiting for the whole thing to finish. Failing that, I would probably split out the enrichment to some kind of background job.
 9. The upload API got quite large and complex, in a real system I would split that functionality into more reusable functions depending on other user cases we might have. For example, the openai completion as JSON could be it's own function, as could the system prompt etc.
+10. I would make the country and city inputs rather than select, so you could type in san francisco rather than just select it from a dropdown.

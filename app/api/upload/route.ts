@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { CompaniesService } from "../../../lib/companies.service";
 import { Company, EmployeeSize } from "../../../models/company";
 import OpenAI from "openai";
+import Exa from "exa-js";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+const exa = new Exa(process.env.EXA_API_KEY || "");
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,6 +22,9 @@ export async function POST(request: NextRequest) {
       ...company,
       raw_json: JSON.stringify(company), // Store original parsed data as raw_json
     }));
+
+    // Validate and correct employee counts using Exa search
+    companies = await validateEmployeeCounts(companies);
 
     // Enrich company data using OpenAI
     companies = await enrichCompaniesWithOpenAI(companies);
@@ -92,7 +98,7 @@ async function enrichCompaniesWithOpenAI(
 Imagine you are an expert business data analyst, at the top of your field. I will provide you with a list of companies and I need you to enrich and standardize the data.
 
 For each company, please:
-1. Standardize the employee size to one of these exact values: "1‑10", "11‑50", "51‑200", "201‑500", "501‑1 000", "1 001‑5 000", "5 001‑10 000", "10 000+"
+1. Analyze the employee_size field carefully. It may contain a descriptive string that includes both the original uploaded data and search results about the company's actual employee count. Based on this information, determine the most accurate employee size and standardize it to one of these exact values: "1‑10", "11‑50", "51‑200", "201‑500", "501‑1 000", "1 001‑5 000", "5 001‑10 000", "10 000+"
 2. If industry is missing or unclear, provide a best guess based on the company name and domain (e.g., "Technology", "Healthcare", "Finance", "Manufacturing", etc.)
 3. If city is missing, try to provide it based on the company information you might know
 4. Be careful with domains and check for typos, for example stripecom should be "stripe.com" not "stripecom", and airbnb should be "airbnb.com" not "airbnb"
@@ -299,6 +305,59 @@ function parseCsvToCompanies(csvData: string): Omit<Company, "id">[] {
   }
 
   return companies;
+}
+
+async function validateEmployeeCounts(
+  companies: Omit<Company, "id">[]
+): Promise<Omit<Company, "id">[]> {
+  try {
+    const validatedCompanies: Omit<Company, "id">[] = [];
+
+    // Process companies one by one to respect Exa rate limit of 4 requests per second
+    for (let i = 0; i < companies.length; i++) {
+      const company = companies[i];
+      try {
+        // Search for company information using Exa
+        const searchQuery = `${company.company_name} employee size`;
+
+        const searchResults = await exa.searchAndContents(searchQuery, {
+          type: "auto",
+          numResults: 1,
+          category: "company",
+          includeDomains: [company.domain],
+          text: true,
+          highlights: true,
+          summary: true,
+        });
+
+        // Create descriptive string for OpenAI to process
+        const originalSize = company.employee_size;
+        const searchSummary =
+          searchResults?.results?.[0]?.summary ||
+          "No additional information found";
+        const descriptiveEmployeeSize = `The data uploaded said they had ${originalSize} employees. Our search for employees returned ${searchSummary}`;
+
+        validatedCompanies.push({
+          ...company,
+          employee_size: descriptiveEmployeeSize as EmployeeSize,
+        });
+      } catch (error) {
+        console.error("Error validating employee counts with Exa:", error);
+        // Return original company data if search fails
+        validatedCompanies.push(company);
+      }
+
+      // Add delay to respect Exa rate limit of 4 requests per second (250ms delay)
+      if (i < companies.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
+    }
+
+    return validatedCompanies;
+  } catch (error) {
+    console.error("Error validating employee counts with Exa:", error);
+    return companies;
+  }
 }
 
 function mapEmployeeSize(rawSize: string): EmployeeSize {
