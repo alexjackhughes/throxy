@@ -4,7 +4,7 @@ interface Props {
   title: string;
   description?: string;
 }
-export const PageHeader = ({ title, description }: Props) => {
+export const PageHeader: React.FC<Props> = ({ title, description }) => {
   return (
     <div className="flex flex-col gap-2 text-center">
       <h1 className="text-4xl font-bold text-slate-100 tracking-tighter">
