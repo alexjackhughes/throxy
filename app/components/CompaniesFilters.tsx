@@ -30,7 +30,7 @@ const CompaniesFilters: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 mt-10">
+    <div className="flex flex-col md:flex-row gap-3">
       <Filter
         filterKey="country"
         filterDisplayKey="Country"

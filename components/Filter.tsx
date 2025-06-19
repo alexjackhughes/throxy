@@ -42,7 +42,7 @@ const Filter: React.FC<Props> = ({
     <select
       value={currentValue}
       onChange={(e) => handleFilterChange(e.target.value)}
-      className="px-3 py-2 border border-slate-400 bg-slate-900 text-slate-100 ring-2 ring-slate-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none w-full"
+      className="px-3 py-2 border text-sm border-white bg-slate-950 text-slate-100 ring-2 ring-white/0 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none w-full"
     >
       <option value="">
         {placeholder || `Select ${filterDisplayKey || filterKey}`}

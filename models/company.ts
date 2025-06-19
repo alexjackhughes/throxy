@@ -35,6 +35,7 @@ export const defaultCompany: Company = {
   company_name: "Apple",
   domain: "apple.com",
   country: "United States",
+  city: "San Francisco",
   employee_size: "1‑10",
   id: "1",
   raw_json: JSON.stringify({

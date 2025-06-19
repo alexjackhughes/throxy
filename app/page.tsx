@@ -2,6 +2,7 @@ import { Metadata } from "next";
 
 import { PageHeader } from "@/components/PageHeader";
 import CompaniesFilters from "@/app/components/CompaniesFilters";
+import CompaniesTable from "./components/CompaniesTable";
 
 export const metadata: Metadata = {
   title: "Throxy",
@@ -10,12 +11,13 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="flex flex-col gap-4 bg-slate-950 h-screen">
-      <div className="flex flex-col mx-auto max-w-2xl mt-24 mb-10 w-full">
+      <div className="flex flex-col mx-auto  max-w-5xl mt-24 mb-10 w-full px-4 gap-8">
         <PageHeader
           title="Company Directory"
           description="Browse, filter, and upload your company data"
         />
         <CompaniesFilters />
+        <CompaniesTable />
       </div>
     </div>
   );
