@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/Table";
-import { Companies, defaultCompany } from "@/models/company";
+import { Companies } from "@/models/company";
 
 interface Props {
   companies?: Companies;
@@ -24,6 +24,7 @@ const CompaniesTable: React.FC<Props> = ({ companies = [] }) => {
             <TableHead>Industry</TableHead>
             <TableHead>City</TableHead>
             <TableHead>Country</TableHead>
+            <TableHead>LinkedIn</TableHead>
             <TableHead>Employee Size</TableHead>
           </TableRow>
         </TableHeader>
@@ -34,14 +35,18 @@ const CompaniesTable: React.FC<Props> = ({ companies = [] }) => {
                 {company.company_name || "-"}
               </TableCell>
               <TableCell className="text-center">
-                <a
-                  href={`https://${company.domain}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-400 hover:underline"
-                >
-                  {company.domain || "-"}
-                </a>
+                {company.domain ? (
+                  <a
+                    href={`https://${company.domain}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-400 hover:underline"
+                  >
+                    {company.domain}
+                  </a>
+                ) : (
+                  "-"
+                )}
               </TableCell>
               <TableCell className="text-center">
                 {company.industry || "-"}
@@ -50,6 +55,20 @@ const CompaniesTable: React.FC<Props> = ({ companies = [] }) => {
                 {company.city || "-"}
               </TableCell>
               <TableCell className="text-center">{company.country}</TableCell>
+              <TableCell className="text-center">
+                {company.linkedin_url ? (
+                  <a
+                    href={`${company.linkedin_url}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-400 hover:underline"
+                  >
+                    LinkedIn
+                  </a>
+                ) : (
+                  "-"
+                )}
+              </TableCell>
               <TableCell className="text-center">
                 {company.employee_size || "-"}
               </TableCell>

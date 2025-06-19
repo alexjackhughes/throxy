@@ -95,9 +95,11 @@ For each company, please:
 1. Standardize the employee size to one of these exact values: "1‑10", "11‑50", "51‑200", "201‑500", "501‑1 000", "1 001‑5 000", "5 001‑10 000", "10 000+"
 2. If industry is missing or unclear, provide a best guess based on the company name and domain (e.g., "Technology", "Healthcare", "Finance", "Manufacturing", etc.)
 3. If city is missing, try to provide it based on the company information you might know
-4. If linkedin_url is missing or incomplete, try to construct the correct LinkedIn company URL format: https://linkedin.com/company/[company-slug]
-5. Clean up and standardize the data format, i.e. remove spaces or quotes, and fix spelling mistakes or column issues like data being in the wrong columns
-6. Country should be the full name, i.e. "United States" not "US", "United Kingdom" not "UK", "Germany" not "DE", etc.
+4. Be careful with domains and check for typos, for example stripecom should be "stripe.com" not "stripecom", and airbnb should be "airbnb.com" not "airbnb"
+5. If linkedin_url is missing or incomplete, try to construct the correct LinkedIn company URL format: https://linkedin.com/company/[company-slug]
+6. Clean up and standardize the data format, i.e. remove spaces or quotes, and fix spelling mistakes or column issues like data being in the wrong columns
+7. Country should be the full name, i.e. "United States" not "US", "United Kingdom" not "UK", "Germany" not "DE", etc.
+8. Where you know the data is incorrect, for example if Apple's location says Canada, you should change it to "United States"
 
 **Important:** You MUST return the data in this exact JSON format:
 {
@@ -267,8 +269,7 @@ function parseCsvToCompanies(csvData: string): Omit<Company, "id">[] {
         ? processedColumns[columnMap.country]
         : "";
 
-    // Store raw employee size value instead of mapping to enum
-    let employeeSize: any = "1‑10"; // default, keeping raw value
+    let employeeSize: string = "1‑10"; // default, keeping raw value
     if (columnMap.employee_size !== undefined) {
       const rawEmployeeSize = processedColumns[columnMap.employee_size];
       employeeSize = rawEmployeeSize || "1‑10"; // Store raw value
