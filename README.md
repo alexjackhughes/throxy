@@ -11,9 +11,9 @@ Here are the steps I followed to build this app:
 [x] Set up Supabase
 [x] Build the data fetching logic
 [x] Build the API routes
-[ ] Build the upload route
-[ ] Link with OpenAI to clean the data
-[ ] Link with Exa to enrich the data
+[x] Build the upload route
+[x] Link with OpenAI to clean the data
+[ ] Link with Exa to enrich the data i.e. for LinkedIn URLs
 
 ## Getting Started
 

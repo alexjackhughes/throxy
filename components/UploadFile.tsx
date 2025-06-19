@@ -135,7 +135,7 @@ const UploadFile: React.FC<UploadFileProps> = ({ onFileUpload = () => {} }) => {
         {isUploading ? (
           <>
             <ArrowPathIcon className="w-8 h-8 text-theme-50 mb-2 animate-spin" />
-            <p className="text-sm text-theme-50">Uploading CSV file...</p>
+            <p className="text-sm text-theme-50">Uploading CSV file</p>
           </>
         ) : (
           <>
