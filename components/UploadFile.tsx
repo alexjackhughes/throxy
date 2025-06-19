@@ -20,10 +20,27 @@ const UploadFile: React.FC<UploadFileProps> = ({ onFileUpload = () => {} }) => {
 
       try {
         const text = await file.text();
-        onFileUpload(text); // TODO: The parsed text needs to be sent to the API
+
+        // Send the CSV data to the upload API
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ csvData: text }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to upload CSV data");
+        }
+
+        const result = await response.json();
+        console.log("Upload result:", result);
+
+        onFileUpload(text);
         setError(null);
       } catch (err) {
-        setError("Error reading file");
+        setError("Error uploading file");
         console.error(err);
       }
     },

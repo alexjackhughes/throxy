@@ -15,7 +15,7 @@ interface Props {
 
 const CompaniesTable: React.FC<Props> = ({ companies = [] }) => {
   return (
-    <div className="rounded-md bg-theme-300 text-white">
+    <div className="rounded-md bg-theme-300 text-white mb-10 md:mb-24">
       <Table>
         <TableHeader>
           <TableRow>

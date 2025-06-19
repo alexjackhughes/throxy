@@ -62,21 +62,6 @@ export class CompaniesService {
     return data ? mapRowToCompany(data) : null;
   }
 
-  // Create a new company
-  static async create(company: Omit<Company, "id">): Promise<Company> {
-    const insertData = mapCompanyToInsert(company);
-
-    const { data, error } = await supabaseClient
-      .from("companies")
-      .insert(insertData)
-      .select()
-      .single();
-
-    if (error) throw new Error(`Failed to create company: ${error.message}`);
-
-    return mapRowToCompany(data);
-  }
-
   // Update an existing company
   static async update(
     id: string,
@@ -122,19 +107,40 @@ export class CompaniesService {
     if (error) throw new Error(`Failed to delete company: ${error.message}`);
   }
 
-  // Bulk insert companies
-  static async bulkInsert(
+  // Upsert a single company (insert or update based on domain)
+  static async upsert(company: Omit<Company, "id">): Promise<Company> {
+    const insertData = mapCompanyToInsert(company);
+
+    const { data, error } = await supabaseClient
+      .from("companies")
+      .upsert(insertData, {
+        onConflict: "domain",
+        ignoreDuplicates: false,
+      })
+      .select()
+      .single();
+
+    if (error) throw new Error(`Failed to upsert company: ${error.message}`);
+
+    return mapRowToCompany(data);
+  }
+
+  // Bulk upsert companies (insert or update based on domain)
+  static async bulkUpsert(
     companies: Omit<Company, "id">[]
   ): Promise<Company[]> {
     const insertData = companies.map(mapCompanyToInsert);
 
     const { data, error } = await supabaseClient
       .from("companies")
-      .insert(insertData)
+      .upsert(insertData, {
+        onConflict: "domain",
+        ignoreDuplicates: false,
+      })
       .select();
 
     if (error)
-      throw new Error(`Failed to bulk insert companies: ${error.message}`);
+      throw new Error(`Failed to bulk upsert companies: ${error.message}`);
 
     return data?.map(mapRowToCompany) || [];
   }
