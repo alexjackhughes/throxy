@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import CompaniesFilters from "@/app/components/CompaniesFilters";
 import CompaniesTable from "./components/CompaniesTable";
+import UploadFile from "@/components/UploadFile";
 
 export const metadata: Metadata = {
   title: "Throxy",
@@ -16,6 +17,7 @@ export default function Home() {
           title="Company Directory"
           description="Browse, filter, and upload your company data"
         />
+        <UploadFile />
         <CompaniesFilters />
         <CompaniesTable />
       </div>
