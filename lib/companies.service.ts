@@ -177,4 +177,48 @@ export class CompaniesService {
 
     return data?.map(mapRowToCompany) || [];
   }
+
+  // Filter companies by multiple criteria
+  static async filterCompanies(filters: {
+    country?: string;
+    employeeSize?: string;
+    city?: string;
+    search?: string;
+  }): Promise<Company[]> {
+    let query = supabaseClient.from("companies").select("*");
+
+    // Apply exact match filters first (these work with AND logic)
+    if (filters.country) {
+      query = query.eq("country", filters.country);
+    }
+
+    if (filters.employeeSize) {
+      query = query.eq("employee_size", filters.employeeSize);
+    }
+
+    if (filters.city) {
+      query = query.eq("city", filters.city);
+    }
+
+    // Apply search filter using proper text search
+    if (filters.search) {
+      const searchTerm = filters.search.trim();
+      if (searchTerm) {
+        // Use separate conditions for company name and domain search
+        // This will work as an OR condition between the two fields
+        query = query.or(
+          `company_name.ilike.%${searchTerm}%,domain.ilike.%${searchTerm}%`
+        );
+      }
+    }
+
+    // Order by created_at
+    query = query.order("created_at", { ascending: false });
+
+    const { data, error } = await query;
+
+    if (error) throw new Error(`Failed to filter companies: ${error.message}`);
+
+    return data?.map(mapRowToCompany) || [];
+  }
 }

@@ -10,7 +10,7 @@ Here are the steps I followed to build this app:
 [x] Add the filters to the page route
 [x] Set up Supabase
 [x] Build the data fetching logic
-[ ] Build the API routes
+[x] Build the API routes
 [ ] Build the upload route
 [ ] Link with OpenAI to clean the data
 [ ] Link with Exa to enrich the data

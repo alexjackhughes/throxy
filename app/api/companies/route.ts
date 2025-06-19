@@ -10,37 +10,24 @@ export async function GET(request: NextRequest) {
     const country = searchParams.get("country");
     const employeeSize = searchParams.get("employee_size");
     const city = searchParams.get("city");
+    const search = searchParams.get("search");
 
     let companies: Companies = [];
 
-    // Apply filtering based on query parameters
-    if (!country && !employeeSize && !city) {
+    // Check if any query parameters are set
+    const hasFilters = country || employeeSize || city || search;
+
+    if (!hasFilters) {
       // No filters - get all companies
       companies = await CompaniesService.getAll();
-    } else if (country && !employeeSize && !city) {
-      // Only country filter - use optimized server method
-      companies = await CompaniesService.filterByCountry(country);
-    } else if (employeeSize && !country && !city) {
-      // Only employee size filter - use optimized server method
-      companies = await CompaniesService.filterByEmployeeSize(employeeSize);
     } else {
-      // Multiple filters or city filter - get all and filter
-      companies = await CompaniesService.getAll();
-
-      // Apply client-side filtering for multiple criteria
-      if (country) {
-        companies = companies.filter((company) => company.country === country);
-      }
-
-      if (employeeSize) {
-        companies = companies.filter(
-          (company) => company.employee_size === employeeSize
-        );
-      }
-
-      if (city) {
-        companies = companies.filter((company) => company.city === city);
-      }
+      // Apply server-side filtering
+      companies = await CompaniesService.filterCompanies({
+        country: country || undefined,
+        employeeSize: employeeSize || undefined,
+        city: city || undefined,
+        search: search || undefined,
+      });
     }
 
     return NextResponse.json(companies);

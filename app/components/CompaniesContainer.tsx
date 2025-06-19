@@ -23,10 +23,12 @@ const CompaniesContainer: React.FC = () => {
         const country = searchParams.get("country");
         const employeeSize = searchParams.get("employee_size");
         const city = searchParams.get("city");
+        const search = searchParams.get("search");
 
         if (country) queryParams.set("country", country);
         if (employeeSize) queryParams.set("employee_size", employeeSize);
         if (city) queryParams.set("city", city);
+        if (search) queryParams.set("search", search);
 
         // Make API request to /api/companies with query parameters
         const apiUrl = `/api/companies${
