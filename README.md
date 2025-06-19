@@ -29,4 +29,5 @@ You can also view the app at [https://alex-throxy.vercel.app](https://alex-throx
 
 1. For the purposes of the test I haven't restricted update access via Row Level Security, but would add authentication and better protections in a real world system.
 2. In a real system I would use something like Prisma as an ORM around directly manipulating the table schema.
-3. There are other things I would do to enrich the data, for example, we could use firecrawl to actually go through the websites of the company. We could collect data on the team page,
+3. There are other things I would do to enrich the data, for example, we could use firecrawl to actually go through the websites of the company. We could collect data on the team page, i.e. who the CEO is, who are potentially buyers for our customers, etc.
+4. I ended up implementing swr to handle data fetching because of the requirement for a data fetching API, because we are using a server rendering platform, we could simply the logic by removing that API and just fetching the data directly from the page.

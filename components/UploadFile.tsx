@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
-import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
+import { ArrowUpTrayIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
+import { mutate } from "swr";
 
 interface UploadFileProps {
   onFileUpload?: (content: string) => void;
@@ -10,6 +11,8 @@ interface UploadFileProps {
 const UploadFile: React.FC<UploadFileProps> = ({ onFileUpload = () => {} }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -17,6 +20,10 @@ const UploadFile: React.FC<UploadFileProps> = ({ onFileUpload = () => {} }) => {
         setError("Please upload a CSV file");
         return;
       }
+
+      setIsUploading(true);
+      setError(null);
+      setSuccessMessage(null);
 
       try {
         const text = await file.text();
@@ -37,11 +44,25 @@ const UploadFile: React.FC<UploadFileProps> = ({ onFileUpload = () => {} }) => {
         const result = await response.json();
         console.log("Upload result:", result);
 
-        onFileUpload(text);
-        setError(null);
+        if (result.success) {
+          setSuccessMessage(result.message);
+          onFileUpload(text);
+
+          // Invalidate all companies cache entries to trigger refetch
+          mutate(
+            (key) =>
+              typeof key === "string" && key.startsWith("/api/companies"),
+            undefined,
+            { revalidate: true }
+          );
+        } else {
+          throw new Error(result.message || "Upload failed");
+        }
       } catch (err) {
-        setError("Error uploading file");
+        setError("Error uploading file: " + (err as Error).message);
         console.error(err);
+      } finally {
+        setIsUploading(false);
       }
     },
     [onFileUpload]
@@ -52,17 +73,24 @@ const UploadFile: React.FC<UploadFileProps> = ({ onFileUpload = () => {} }) => {
       e.preventDefault();
       setIsDragging(false);
 
+      if (isUploading) return; // Prevent upload during loading
+
       if (e.dataTransfer.files.length) {
         handleFile(e.dataTransfer.files[0]);
       }
     },
-    [handleFile]
+    [handleFile, isUploading]
   );
 
-  const onDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
+  const onDragOver = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      if (!isUploading) {
+        setIsDragging(true);
+      }
+    },
+    [isUploading]
+  );
 
   const onDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -71,20 +99,24 @@ const UploadFile: React.FC<UploadFileProps> = ({ onFileUpload = () => {} }) => {
 
   const onFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (isUploading) return; // Prevent upload during loading
+
       if (e.target.files?.length) {
         handleFile(e.target.files[0]);
       }
     },
-    [handleFile]
+    [handleFile, isUploading]
   );
 
   return (
     <div className="flex flex-col items-center">
       <div
-        className={`relative flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-          isDragging
-            ? "border-white bg-theme-300"
-            : "border-theme-100 hover:border-white hover:bg-theme-300"
+        className={`relative flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-lg transition-colors ${
+          isUploading
+            ? "border-theme-100 bg-theme-400 cursor-not-allowed"
+            : isDragging
+            ? "border-white bg-theme-300 cursor-pointer"
+            : "border-theme-100 hover:border-white hover:bg-theme-300 cursor-pointer"
         }`}
         onDrop={onDrop}
         onDragOver={onDragOver}
@@ -93,15 +125,33 @@ const UploadFile: React.FC<UploadFileProps> = ({ onFileUpload = () => {} }) => {
         <input
           type="file"
           accept=".csv"
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          className={`absolute inset-0 w-full h-full opacity-0 ${
+            isUploading ? "cursor-not-allowed" : "cursor-pointer"
+          }`}
           onChange={onFileChange}
+          disabled={isUploading}
         />
-        <ArrowUpTrayIcon className="w-8 h-8 text-theme-50 mb-2" />
-        <p className="text-sm text-theme-50">
-          Click to upload or drag and drop a CSV file
-        </p>
+
+        {isUploading ? (
+          <>
+            <ArrowPathIcon className="w-8 h-8 text-theme-50 mb-2 animate-spin" />
+            <p className="text-sm text-theme-50">Uploading CSV file...</p>
+          </>
+        ) : (
+          <>
+            <ArrowUpTrayIcon className="w-8 h-8 text-theme-50 mb-2" />
+            <p className="text-sm text-theme-50">
+              Click to upload or drag and drop a CSV file
+            </p>
+          </>
+        )}
       </div>
-      {error && <p className="mt-2 text-sm text-white">{error}</p>}
+
+      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+
+      {successMessage && (
+        <p className="mt-2 text-sm text-green-400">{successMessage}</p>
+      )}
     </div>
   );
 };

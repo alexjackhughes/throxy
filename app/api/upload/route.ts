@@ -6,17 +6,11 @@ export async function POST(request: NextRequest) {
   try {
     const { csvData } = await request.json();
 
-    console.log("Received CSV data:", csvData);
-
     // Process and parse the CSV data into Company objects
     const companies = parseCsvToCompanies(csvData);
 
-    console.log("Parsed companies:", companies);
-
     // Bulk upsert companies into the database (insert new or update existing by domain)
     const upsertedCompanies = await CompaniesService.bulkUpsert(companies);
-
-    console.log(`Successfully upserted ${upsertedCompanies.length} companies`);
 
     return NextResponse.json({
       success: true,
