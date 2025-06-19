@@ -307,57 +307,78 @@ function parseCsvToCompanies(csvData: string): Omit<Company, "id">[] {
   return companies;
 }
 
+function isValidDomain(domain: string): boolean {
+  if (!domain || typeof domain !== "string") {
+    return false;
+  }
+
+  // Basic domain validation - check if it contains a dot and valid characters
+  const domainRegex =
+    /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  const trimmedDomain = domain.trim();
+
+  // Check basic format and length
+  if (trimmedDomain.length === 0 || trimmedDomain.length > 253) {
+    return false;
+  }
+
+  // Must contain at least one dot and match domain regex
+  return trimmedDomain.includes(".") && domainRegex.test(trimmedDomain);
+}
+
 async function validateEmployeeCounts(
   companies: Omit<Company, "id">[]
 ): Promise<Omit<Company, "id">[]> {
-  try {
-    const validatedCompanies: Omit<Company, "id">[] = [];
+  const validatedCompanies: Omit<Company, "id">[] = [];
 
-    // Process companies one by one to respect Exa rate limit of 4 requests per second
-    for (let i = 0; i < companies.length; i++) {
-      const company = companies[i];
-      try {
-        // Search for company information using Exa
-        const searchQuery = `${company.company_name} employee size`;
+  // Process companies one by one to respect Exa rate limit of 4 requests per second
+  for (let i = 0; i < companies.length; i++) {
+    const company = companies[i];
 
-        const searchResults = await exa.searchAndContents(searchQuery, {
-          type: "auto",
-          numResults: 1,
-          category: "company",
-          includeDomains: [company.domain],
-          text: true,
-          highlights: true,
-          summary: true,
-        });
+    try {
+      // Search for company information using Exa
+      const searchQuery = `${company.company_name} employee size`;
 
-        // Create descriptive string for OpenAI to process
-        const originalSize = company.employee_size;
-        const searchSummary =
-          searchResults?.results?.[0]?.summary ||
-          "No additional information found";
-        const descriptiveEmployeeSize = `The data uploaded said they had ${originalSize} employees. Our search for employees returned ${searchSummary}`;
+      const searchResults = await exa.searchAndContents(searchQuery, {
+        type: "auto",
+        numResults: 1,
+        category: "company",
+        // We do this to prevent Exa failing on invalid domains
+        ...(isValidDomain(company.domain)
+          ? { includeDomains: [company.domain] }
+          : {}),
+        text: true,
+        highlights: true,
+        summary: true,
+      });
 
-        validatedCompanies.push({
-          ...company,
-          employee_size: descriptiveEmployeeSize as EmployeeSize,
-        });
-      } catch (error) {
-        console.error("Error validating employee counts with Exa:", error);
-        // Return original company data if search fails
-        validatedCompanies.push(company);
-      }
+      // Create descriptive string for OpenAI to process
+      const originalSize = company.employee_size;
+      const searchSummary =
+        searchResults?.results?.[0]?.summary ||
+        "No additional information found";
+      const descriptiveEmployeeSize = `The data uploaded said they had ${originalSize} employees. Our search for employees returned ${searchSummary}`;
 
-      // Add delay to respect Exa rate limit of 4 requests per second (250ms delay)
-      if (i < companies.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 250));
-      }
+      validatedCompanies.push({
+        ...company,
+        employee_size: descriptiveEmployeeSize as EmployeeSize,
+      });
+    } catch (error) {
+      console.error(
+        `Error validating employee counts with Exa for ${company.company_name} (${company.domain}):`,
+        error
+      );
+      // Return original company data if search fails
+      validatedCompanies.push(company);
     }
 
-    return validatedCompanies;
-  } catch (error) {
-    console.error("Error validating employee counts with Exa:", error);
-    return companies;
+    // Add delay to respect Exa rate limit of 4 requests per second (250ms delay)
+    if (i < companies.length - 1) {
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
   }
+
+  return validatedCompanies;
 }
 
 function mapEmployeeSize(rawSize: string): EmployeeSize {
