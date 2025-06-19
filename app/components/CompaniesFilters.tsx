@@ -1,8 +1,14 @@
+"use client";
+
 import React from "react";
+import { useRouter } from "next/navigation";
 import Filter from "@/components/Filter";
 import { employeeSizeOptions } from "@/models/company";
+import Button from "@/components/Button";
 
 const CompaniesFilters: React.FC = () => {
+  const router = useRouter();
+
   const countryOptions = [
     "United States",
     "United Kingdom",
@@ -29,8 +35,13 @@ const CompaniesFilters: React.FC = () => {
     "Stockholm",
   ];
 
+  const handleResetFilters = () => {
+    // Navigate to the current page without any query parameters
+    router.push(window.location.pathname);
+  };
+
   return (
-    <div className="flex flex-col md:flex-row gap-3">
+    <div className="flex flex-col md:flex-row gap-3 items-end">
       <Filter
         filterKey="country"
         filterDisplayKey="Country"
@@ -46,6 +57,9 @@ const CompaniesFilters: React.FC = () => {
         filterDisplayKey="City"
         filterOptions={cityOptions}
       />
+      <Button onClick={handleResetFilters} size="small">
+        Reset Filters
+      </Button>
     </div>
   );
 };

@@ -13,9 +13,7 @@ interface Props {
   companies?: Companies;
 }
 
-const CompaniesTable: React.FC<Props> = ({
-  companies = [defaultCompany, defaultCompany, defaultCompany, defaultCompany],
-}) => {
+const CompaniesTable: React.FC<Props> = ({ companies = [] }) => {
   return (
     <div className="rounded-md bg-theme-300 text-white">
       <Table>

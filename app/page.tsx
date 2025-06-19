@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 import { PageHeader } from "@/components/PageHeader";
 import CompaniesFilters from "@/app/components/CompaniesFilters";
-import CompaniesTable from "./components/CompaniesTable";
+import CompaniesContainer from "./components/CompaniesContainer";
 import UploadFile from "@/components/UploadFile";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function Home() {
         />
         <UploadFile />
         <CompaniesFilters />
-        <CompaniesTable />
+        <CompaniesContainer />
       </div>
     </div>
   );
