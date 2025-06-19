@@ -7,15 +7,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/Table";
-import { Companies, defaultCompanies } from "@/models/company";
+import { Companies, defaultCompany } from "@/models/company";
 
 interface Props {
   companies?: Companies;
 }
 
-const CompaniesTable: React.FC<Props> = ({ companies = defaultCompanies }) => {
+const CompaniesTable: React.FC<Props> = ({
+  companies = [defaultCompany, defaultCompany, defaultCompany, defaultCompany],
+}) => {
   return (
-    <div className="rounded-md border bg-slate-950 text-white">
+    <div className="rounded-md bg-theme-300 text-white">
       <Table>
         <TableHeader>
           <TableRow>
@@ -37,7 +39,7 @@ const CompaniesTable: React.FC<Props> = ({ companies = defaultCompanies }) => {
                   href={`https://${company.domain}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-500 hover:text-blue-500 hover:underline"
+                  className="text-blue-400 hover:text-blue-400 hover:underline"
                 >
                   {company.domain || "-"}
                 </a>

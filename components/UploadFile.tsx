@@ -66,8 +66,8 @@ const UploadFile: React.FC<UploadFileProps> = ({ onFileUpload = () => {} }) => {
       <div
         className={`relative flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
           isDragging
-            ? "border-blue-500 bg-slate-800"
-            : "border-slate-800 hover:border-blue-500"
+            ? "border-white bg-theme-300"
+            : "border-theme-100 hover:border-white hover:bg-theme-300"
         }`}
         onDrop={onDrop}
         onDragOver={onDragOver}
@@ -79,12 +79,12 @@ const UploadFile: React.FC<UploadFileProps> = ({ onFileUpload = () => {} }) => {
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           onChange={onFileChange}
         />
-        <ArrowUpTrayIcon className="w-8 h-8 text-slate-500 mb-2" />
-        <p className="text-sm text-slate-500">
+        <ArrowUpTrayIcon className="w-8 h-8 text-theme-50 mb-2" />
+        <p className="text-sm text-theme-50">
           Click to upload or drag and drop a CSV file
         </p>
       </div>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-sm text-white">{error}</p>}
     </div>
   );
 };

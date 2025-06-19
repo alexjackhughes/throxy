@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-4 bg-slate-950 h-screen">
+    <div className="flex flex-col gap-4 bg-theme-500 h-screen">
       <div className="flex flex-col mx-auto  max-w-5xl mt-24 mb-10 w-full px-4 gap-8">
         <PageHeader
           title="Company Directory"

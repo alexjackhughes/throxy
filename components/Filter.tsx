@@ -2,6 +2,13 @@
 
 import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/Select";
 
 interface Props {
   filterKey: string;
@@ -39,20 +46,20 @@ const Filter: React.FC<Props> = ({
   };
 
   return (
-    <select
-      value={currentValue}
-      onChange={(e) => handleFilterChange(e.target.value)}
-      className="px-3 py-2 border text-sm border-white bg-slate-950 text-slate-100 ring-2 ring-white/0 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none w-full"
-    >
-      <option value="">
-        {placeholder || `Select ${filterDisplayKey || filterKey}`}
-      </option>
-      {filterOptions.map((option) => (
-        <option key={option} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
+    <Select value={currentValue} onValueChange={handleFilterChange}>
+      <SelectTrigger className="w-full">
+        <SelectValue
+          placeholder={placeholder || `Select ${filterDisplayKey || filterKey}`}
+        />
+      </SelectTrigger>
+      <SelectContent>
+        {filterOptions.map((option) => (
+          <SelectItem key={option} value={option}>
+            {option}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };
 
