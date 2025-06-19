@@ -6,6 +6,8 @@ export interface Company {
   employee_size: EmployeeSize;
   id?: string; // remove this later, just for my memory on what goes into table
   raw_json?: string; // remove this later, just for my memory goes into table
+  industry?: string; // enrichment idea
+  linkedin_url?: string; // enrichment idea
 }
 
 export type EmployeeSize =
