@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 import { PageHeader } from "@/components/PageHeader";
 import CompaniesFilters from "@/app/components/CompaniesFilters";
-import CompaniesContainer from "./components/CompaniesContainer";
+import CompaniesTableContainer from "./components/CompaniesTableContainer";
 import UploadFile from "@/app/components/UploadFile";
 import Search from "@/components/Search";
 
@@ -29,7 +29,7 @@ export default function Home() {
           <UploadFile />
           <Search placeholder="You can search by company name or domain" />
           <CompaniesFilters />
-          <CompaniesContainer />
+          <CompaniesTableContainer />
         </div>
       </div>
     </Suspense>

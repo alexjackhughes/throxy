@@ -21,7 +21,7 @@ const fetcher = async (url: string): Promise<Companies> => {
   return response.json();
 };
 
-const CompaniesContainer: React.FC = () => {
+const CompaniesTableContainer: React.FC = () => {
   const searchParams = useSearchParams();
 
   // Build query parameters from URL search params
@@ -69,4 +69,4 @@ const CompaniesContainer: React.FC = () => {
   return <CompaniesTable companies={companies || []} />;
 };
 
-export default CompaniesContainer;
+export default CompaniesTableContainer;
