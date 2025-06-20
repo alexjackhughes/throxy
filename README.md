@@ -43,6 +43,7 @@ You can also view the app at [https://throxy.vercel.app](https://throxy.vercel.a
 6. With more time, I would have added a better loading state for suspense, so each component has it's own loading and can be handled separately.
 7. In a real system, I would set up a table to track countries/cities added, so that the filter isn't simply hardcoded options.
 8. With the employee size, I would have typically changes the space in 10 000 to be 10,000 etc. but realise that is a European format and so didn't for purposes of test.
+9. With employee size, I'm not happy with how often the exa.ai search fails - do to cost constraints and rate limits, I've kept my implementation lean, but in a real system I would do things like; fetch more than one source, retry on failure, and then summarise the full pages down to a single number, rather than simply take a summary of the first result.
 
 The speed of my implementation is quite slow, because I'm doing all the calculations in one big chunk and because Exa.ai and OpenAI have a really small rate limit on the hobby accounts. In a real system, I would do something like:
 
