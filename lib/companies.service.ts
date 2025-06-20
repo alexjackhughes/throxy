@@ -129,7 +129,22 @@ export class CompaniesService {
   static async bulkUpsert(
     companies: Omit<Company, "id">[]
   ): Promise<Company[]> {
-    const insertData = companies.map(mapCompanyToInsert);
+    console.log("Bulk upserting companies");
+    const insertData = companies.map((company) => {
+      const mapped = mapCompanyToInsert(company);
+      // Provide defaults for null/undefined values
+      return {
+        ...mapped,
+        company_name: mapped.company_name ?? "",
+        domain: mapped.domain ?? "",
+        country: mapped.country ?? "Remote",
+        city: mapped.city ?? null,
+        industry: mapped.industry ?? null,
+        employee_size: mapped.employee_size ?? "1-10",
+        linkedin_url: mapped.linkedin_url ?? null,
+        raw_json: mapped.raw_json ?? null,
+      };
+    });
 
     const { data, error } = await supabaseClient
       .from("companies")
