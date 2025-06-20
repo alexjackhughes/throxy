@@ -26,7 +26,9 @@ const FilterWithSearch: React.FC<Props> = ({
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Normalize options to always be FilterOption objects
   const normalizedOptions: FilterOption[] = filterOptions.map((option) => {
@@ -51,6 +53,11 @@ const FilterWithSearch: React.FC<Props> = ({
       )
     : normalizedOptions;
 
+  // Reset highlighted index when filtered options change
+  useEffect(() => {
+    setHighlightedIndex(-1);
+  }, [searchInput]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -60,6 +67,7 @@ const FilterWithSearch: React.FC<Props> = ({
       ) {
         setIsOpen(false);
         setSearchInput(""); // Clear search when closing
+        setHighlightedIndex(-1);
       }
     };
 
@@ -73,9 +81,48 @@ const FilterWithSearch: React.FC<Props> = ({
     setIsOpen(true);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!isOpen) {
+      if (e.key === "ArrowDown" || e.key === "Enter") {
+        setIsOpen(true);
+        return;
+      }
+      return;
+    }
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setHighlightedIndex((prev) =>
+          prev < filteredOptions.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setHighlightedIndex((prev) =>
+          prev > 0 ? prev - 1 : filteredOptions.length - 1
+        );
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (highlightedIndex >= 0 && filteredOptions[highlightedIndex]) {
+          handleOptionSelect(filteredOptions[highlightedIndex]);
+        }
+        break;
+      case "Escape":
+        e.preventDefault();
+        setIsOpen(false);
+        setSearchInput("");
+        setHighlightedIndex(-1);
+        inputRef.current?.blur();
+        break;
+    }
+  };
+
   const handleOptionSelect = (option: FilterOption) => {
     setSearchInput("");
     setIsOpen(false);
+    setHighlightedIndex(-1);
 
     // Create new URLSearchParams from current search params
     const params = new URLSearchParams(searchParams);
@@ -92,6 +139,7 @@ const FilterWithSearch: React.FC<Props> = ({
   const handleClearSelection = () => {
     setSearchInput("");
     setIsOpen(false);
+    setHighlightedIndex(-1);
 
     // Create new URLSearchParams from current search params
     const params = new URLSearchParams(searchParams);
@@ -99,6 +147,10 @@ const FilterWithSearch: React.FC<Props> = ({
 
     // Update the URL
     router.push(`?${params.toString()}`);
+  };
+
+  const handleOptionMouseEnter = (index: number) => {
+    setHighlightedIndex(index);
   };
 
   // Determine what to show in the input
@@ -110,10 +162,12 @@ const FilterWithSearch: React.FC<Props> = ({
     <div ref={containerRef} className="relative w-full">
       <div className="relative">
         <input
+          ref={inputRef}
           type="text"
           value={inputDisplayValue}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          onKeyDown={handleKeyDown}
           placeholder={
             placeholder || `Search ${filterDisplayKey || filterKey}...`
           }
@@ -139,7 +193,12 @@ const FilterWithSearch: React.FC<Props> = ({
             <div
               key={`${option.value}-${index}`}
               onClick={() => handleOptionSelect(option)}
-              className="focus:bg-theme-200 text-white relative flex w-full cursor-pointer items-center gap-2 rounded-sm py-1.5 px-2 text-sm outline-none select-none hover:bg-theme-200"
+              onMouseEnter={() => handleOptionMouseEnter(index)}
+              className={`text-white relative flex w-full cursor-pointer items-center gap-2 rounded-sm py-1.5 px-2 text-sm outline-none select-none ${
+                highlightedIndex === index
+                  ? "bg-theme-200"
+                  : "hover:bg-theme-200"
+              }`}
             >
               {option.display}
             </div>

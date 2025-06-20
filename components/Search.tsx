@@ -61,7 +61,7 @@ const Search: React.FC<Props> = ({ placeholder = "Search..." }) => {
         value={inputValue}
         onChange={handleSearchChange}
         placeholder={placeholder}
-        className="bg-theme-300 text-white border-theme-100 focus-visible:border-theme-100 focus-visible:ring-white flex w-full items-center gap-2 rounded-md border pl-10 pr-3 py-2 text-sm outline-none focus-visible:ring-[1px] h-12 placeholder:text-white/70"
+        className="bg-theme-300 text-white border-theme-100 focus-visible:border-theme-100 focus-visible:ring-white flex w-full items-center gap-2 rounded-md border pl-10 pr-3 py-2 text-sm outline-none focus-visible:ring-[1px] h-10 placeholder:text-white/70"
       />
     </div>
   );
