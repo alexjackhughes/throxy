@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import CompaniesFilters from "@/app/components/CompaniesFilters";
 import CompaniesContainer from "./components/CompaniesContainer";
-import UploadFile from "@/components/UploadFile";
+import UploadFile from "@/app/components/UploadFile";
 import Search from "@/components/Search";
 
 export const metadata: Metadata = {
