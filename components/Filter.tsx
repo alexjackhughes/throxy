@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -25,6 +25,7 @@ const Filter: React.FC<Props> = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   // Get the current value from URL params
   const currentValue = searchParams.get(filterKey) || "";
@@ -41,8 +42,8 @@ const Filter: React.FC<Props> = ({
       params.delete(filterKey);
     }
 
-    // Update the URL
-    router.push(`?${params.toString()}`);
+    // Update the URL with current pathname preserved
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   return (

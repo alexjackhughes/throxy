@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 interface FilterOption {
@@ -24,6 +24,7 @@ const FilterWithSearch: React.FC<Props> = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -129,7 +130,7 @@ const FilterWithSearch: React.FC<Props> = ({
     params.set(filterKey, option.value);
 
     // Update the URL
-    router.push(`?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const handleInputFocus = () => {
@@ -146,7 +147,7 @@ const FilterWithSearch: React.FC<Props> = ({
     params.delete(filterKey);
 
     // Update the URL
-    router.push(`?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const handleOptionMouseEnter = (index: number) => {
